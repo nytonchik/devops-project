@@ -33,16 +33,15 @@ jobs:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
         run: |
-          echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
-          docker build -t nyton/backend:latest ./backend
+          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+          docker build -t nyton/backend ./backend
           docker push nyton/backend:latest
 
       - name: Deploy via SSH
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
         run: |
-          mkdir -p ~/.ssh
-          echo "${SSH_PRIVATE_KEY}" > ~/.ssh/id_rsa
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh -o StrictHostKeyChecking=no nyton@192.168.1.184 "
             cd ~/devops-project &&
